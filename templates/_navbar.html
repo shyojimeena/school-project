@@ -1,11 +1,24 @@
 {% load staticfiles %}
+{% load active from einsteinish %}
 <div class="navbar-fixed">
   <nav role="navigation" class="blue">
     <div class="nav-wrapper container">
-      <a id="logo-container" href="/" class="brand-logo">blogghar</a>
+      <a id="logo-container" href="/" class="brand-logo">Project</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li><a href="/">Home</a></li>
+
         {% if user.is_authenticated %}
+         <li><a href="{% url "home" %}">Discussions</a></li>
+          <li><a href="{% url "start-discussion" %}">New Discussion</a></li>
+         <li><a href="/users/">Members</a></li>
+         <li><a href="/calendar/">Events</a></li
+        
+         <li class="{% active request.path "^/reources/" %}"><a href="{% url 'resource_home' %}"> Resources</a></li>
+          <li><a href="/dialogs/">Chat</a></li
+
+
+         
+
           <li>
             <a href="{% url 'authapp:user_profile' %}" class="dropdown-button"
               data-activates="user-dropdown" data-beloworigin="true" data-constrainwidth="false">
@@ -25,6 +38,7 @@
                 </li>
               </ul>
           </li>
+           
         {% else %}
           <li><a href="{% url 'account_login' %}">Login</a></li>
           <li><a href="{% url 'account_signup' %}" class="btn purple waves-effect waves-light">Sign Up</a></li>

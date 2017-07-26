@@ -27,6 +27,8 @@ SECRET_KEY = 'mc1^ml6si(09@b8n+fv9p-db=1vh_%18l#x3gkr3kamesaf(l1'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+CHAT_WS_SERVER_HOST = 'localhost'
+CHAT_WS_SERVER_PORT = 5002
 
 
 # Application definition
@@ -43,6 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+     'bootstrapform',
+     'disqus',
 
     # Enabling django sites framework for allauth.
     'django.contrib.sites',
@@ -60,6 +65,17 @@ INSTALLED_APPS = [
     'blog',
     'simplemde',
     'comments',
+   # 'discussions',
+   # 'messanger',
+    'discussions',
+    'django_private_chat',
+    'djangoratings',
+    'courses',
+    'guardian',
+    'happenings',
+    
+    
+    
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -116,7 +132,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -154,6 +170,7 @@ AUTHENTICATION_BACKENDS = (
 
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend'
 )
 
 ACCOUNT_AUTHENTICATION_METHOD = "username"

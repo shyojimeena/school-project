@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block head_title %}Users{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="span12">
+        <div class="row-fluid">
+          <ul class="thumbnails">
+            <ul>
+                {% for user in object_list %}
+             <!--    <li class="user"><a href="/users/">{{user.username}}</a> </li> -->
+                 <li> <a href="{{ user.profile.get_absolute_url }}" class="grey-text">
+                  {{ user.username }}
+               </a>
+                 </li>
+                {% endfor %}
+
+               
+              </ul>
+          </ul>
+        </div>
+      
+    </div>
+</div>  
+  
+{% endblock %}
+
+

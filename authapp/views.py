@@ -1,14 +1,32 @@
 import uuid
 
-from django.shortcuts import redirect
+from django.shortcuts import redirect,get_object_or_404
+from django.contrib import messages
+from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
-from django.views.generic import DetailView, ListView, UpdateView
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.views.generic import DetailView, RedirectView, TemplateView, ListView, UpdateView, CreateView, DeleteView
 from django.views.generic.detail import SingleObjectMixin
 from django.db.models import Prefetch
+from guardian.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from braces.views import SetHeadlineMixin
 
-from .models import UserProfile
+from django.contrib.auth.models import User
+
+from .models import UserProfile,SavedResource, TopicFollow
+from courses.models import Resource
 from comments.models import Comment
 from .forms import UserForm, UserProfileForm
+
+# user list
+class UsersView(TemplateView):
+    template_name = 'authapp/users.html'
+
+    def get_context_data(self,**kwargs):
+        context = super(UsersView,self).get_context_data(**kwargs)
+        context['object_list'] = User.objects.all()
+        return context
+
 
 
 class UserProfileView(DetailView):
@@ -22,6 +40,17 @@ class UserProfileView(DetailView):
         queryset = self.model.objects.select_related(
             'user', 'user__blog').prefetch_related('user__posts')
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileView, self).get_context_data(**kwargs)
+        user = get_object_or_404(User, username=self.kwargs['username'])
+        userprofile = get_object_or_404(UserProfile, user=user) #redundancy check for user may exist but his profile not
+        saved_resources = SavedResource.objects.filter(user=user)
+        topics_follow = TopicFollow.objects.filter(user=user)
+        context['userprofile'] = userprofile
+        context['saved_resources'] = saved_resources
+        context['topics_follow'] = topics_follow
+        return context    
 
 
 @login_required
@@ -104,3 +133,35 @@ class UserProfileUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+
+
+
+# Newly added views
+
+
+class UserInfoMixin(object):
+    def get_context_data(self,**kwargs):
+        context = super(UserInfoMixin, self).get_context_data(**kwargs)
+        user = get_object_or_404(User, username=self.kwargs['username'])
+        context['userinfo'] = user
+        return context
+
+
+class UserResourcesView(SetHeadlineMixin, UserInfoMixin, ListView):
+    context_object_name = 'resources'
+    template_name = 'authapp/user_resources.html'
+    paginate_by = 12
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs['username'])
+        self.headline = unicode(user.username) + ' shared Resources'
+        return user.resource_set.all()
+
+class MyResourcesView(LoginRequiredMixin, RedirectView):
+    permanent = False
+
+    def get_redirect_url(self):
+        user = self.request.user
+        return reverse('user_resources', kwargs={'username':user.username})

@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from courses.models import Topic, Resource
 
 
 class UserProfile(models.Model):
@@ -37,3 +39,27 @@ class UserProfile(models.Model):
 
     def is_reader(self):
         return self.user_type == 'r'
+
+
+class SavedResource(models.Model):
+    user = models.ForeignKey(User)
+    resource = models.ForeignKey(Resource)
+    saved_at = models.DateTimeField(auto_now_add=True,editable=False)
+    
+    class Meta:
+        unique_together = (('user', 'resource'),)
+
+    def __unicode__(self):
+        return '%s %s'  %(self.user,self.resource) 
+
+class TopicFollow(models.Model):
+    user = models.ForeignKey(User)
+    topic = models.ForeignKey(Topic)
+    followed_at = models.DateTimeField(auto_now_add=True,editable=False)
+    
+    class Meta:
+        unique_together = (('user','topic'),)
+
+    def __unicode__(self):
+        return '%s %s' %(self.user,self.topic)
+            

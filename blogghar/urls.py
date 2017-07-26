@@ -17,14 +17,25 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import *
 
 urlpatterns = [
+    url(r'^$', HomeView.as_view(), name='page_home'),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^simplemde/', include('simplemde.urls', namespace='simplemde')),
     url(r'^comments/', include('comments.urls', namespace='comments')),
     url(r'^', include('authapp.urls', namespace='authapp')),
-    url(r'^', include('blog.urls', namespace='blog')),
+    url(r'^blog/', include('blog.urls', namespace='blog')),
+    url(r'^', include('django_private_chat.urls')),
+    url(r'^discussions/', include('discussions.urls')),
+    url(r'^courses/', include('courses.urls')),
+    url(r'^calendar/', include('happenings.urls', namespace='calendar'))
+  
+  
+
+   # url(r'^', include('discussions.urls')), 
+    #url('', include('social_django.urls', namespace='social')), 
 ]
 
 if settings.DEBUG:
